@@ -1,20 +1,6 @@
 from collections import deque
 from heapq import *
-
-
-def create_solution(parents, src, dest):
-    solution = [src]
-    node = dest
-    while node != src:
-        solution.insert(1, node)
-        node = parents[node]
-
-    return solution
-
-
-def is_selected(node, explored_set, frontier):
-    return (node not in explored_set) and (node not in frontier)
-
+from utility_functions import *
 
 def breadth_first_search(adj, src, dest):
     count_node = len(adj)
@@ -47,13 +33,6 @@ def breadth_first_search(adj, src, dest):
                     return [explored_set, solution]
 
                 frontier.append(vertex)
-
-
-def find_node_in_priority_queue(q, node):
-    for i in range(len(q)):
-        if q[i][1] == node:
-            return i
-    return -1
 
 
 def uniform_cost_search(adj, src, dest):
@@ -92,26 +71,6 @@ def uniform_cost_search(adj, src, dest):
 
     solution = create_solution(parents, src, dest)
     return [explored_set, solution]
-
-# -> : one direction
-# <-> : two directions
-# Returns true:
-#   * current node -> new node and new node is not visited
-#   * there is a path from new node to current node that it is recorded
-# Otherwise returns false
-def is_against(adj, explored_set, parents, cur_node, new_state, src):
-    if new_state in explored_set and adj[new_state][cur_node] != 0:
-        return True
-    if cur_node == src or new_state not in explored_set:
-        return False
-
-    node = cur_node
-    while True:
-        node = parents[node]
-        if node == src:
-            return False
-        elif node == new_state:
-            return True
 
 
 def depth_first_search(adj, src, dest):
@@ -163,11 +122,8 @@ def depth_first_search(adj, src, dest):
                 if vertex == count_node - 1:
                     visited.pop()
                     start_from[node] = count_node
-# [0, 2, 0, 0, 1],
-# [0, 0, 5, 0, 6],
-# [0, 0, 0, 3, 0],
-# [0, 1, 0, 0, 0],
-# [0, 0, 0, 1, 0],
+
+
 if __name__ == "__main__":
     # read file and store
     # reader = open("input.txt", "r")
@@ -217,16 +173,16 @@ if __name__ == "__main__":
     # print(expanded_nodes)
     # print(path)
 
-    d = [
-        [0, 2, 0, 0, 1],
-        [0, 0, 5, 0, 6],
-        [0, 0, 0, 3, 0],
-        [0, 1, 0, 0, 0],
-        [0, 0, 0, 1, 0],
-    ]
-    [expanded_nodes, path] = depth_first_search(d, 3, 0)
-    print(expanded_nodes)
-    print(path)
+    # d = [
+    #     [0, 2, 0, 0, 1],
+    #     [0, 0, 5, 0, 6],
+    #     [0, 0, 0, 3, 0],
+    #     [0, 1, 0, 0, 0],
+    #     [0, 0, 0, 1, 0],
+    # ]
+    # [expanded_nodes, path] = depth_first_search(d, 3, 0)
+    # print(expanded_nodes)
+    # print(path)
     # show output
 
     # save to file
