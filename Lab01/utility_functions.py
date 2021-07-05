@@ -1,8 +1,13 @@
 def create_solution(parents, src, dest):
     solution = [src]
+    if src == dest:
+        return solution
+
     node = dest
     while node != src:
         solution.insert(1, node)
+        if node not in parents.keys():
+            break
         node = parents[node]
 
     return solution
