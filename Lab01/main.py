@@ -8,7 +8,6 @@ CUTOFF = "CUTOFF"
 
 def breadth_first_search(adj, src, dest):
     count_node = len(adj)
-
     if count_node < 2:
         return ([], adj)
 
@@ -41,7 +40,6 @@ def breadth_first_search(adj, src, dest):
 
 def uniform_cost_search(adj, src, dest):
     count_node = len(adj)
-
     if count_node < 2:
         return ([], adj)
 
@@ -63,15 +61,16 @@ def uniform_cost_search(adj, src, dest):
             break
 
         for vertex in range(count_node):
+            weight_new_node = weight + adj[node][vertex]
             i = find_node_in_priority_queue(frontier, vertex)
             if vertex != node and adj[node][vertex] != 0:
                 if vertex not in explored_set and i == -1:
                     parents[vertex] = node
-                    heappush(frontier, (weight + adj[node][vertex], vertex))
-                elif i != -1 and frontier[i][0] > weight + adj[node][vertex]:
+                    heappush(frontier, (weight_new_node, vertex))
+                elif i != -1 and frontier[i][0] > weight_new_node:
                     frontier.pop(i)
                     parents[vertex] = node
-                    heappush(frontier, (weight + adj[node][vertex], vertex))
+                    heappush(frontier, (weight_new_node, vertex))
 
     solution = create_solution(parents, src, dest)
     return (explored_set, solution)
@@ -194,6 +193,78 @@ def iterative_deepening_search(adj, src, dest):
             return (explored_sets, solution)
 
 
+def greedy_best_first_search(adj, heuristic_values, src, dest):
+    count_node = len(adj)
+    if count_node < 2:
+        return ([], adj)
+
+    # initialize necessary variables
+    explored_set = []
+    frontier = []  # priority queue: use tuple with the first element is heuristic_val
+    parents = {}
+
+    # start with source node, path cost is zero
+    heappush(frontier, ((heuristic_values[src], src)))
+
+    while True:
+        if len(frontier) == 0:  # failure
+            return ([], [])
+
+        (heuristic_val, node) = heappop(frontier)
+        if node == dest:
+            break
+
+        explored_set.append(node)
+        for vertex in range(count_node):
+            i = find_node_in_priority_queue(frontier, vertex)
+            if vertex != node and adj[node][vertex] != 0:
+                if vertex not in explored_set and i == -1:
+                    parents[vertex] = node
+                    heappush(frontier, (heuristic_values[vertex], vertex))
+
+    solution = create_solution(parents, src, dest)
+    return (explored_set, solution)
+
+
+def a_star(adj, heuristic_values, src, dest):
+    count_node = len(adj)
+    if count_node < 2:
+        return ([], adj)
+
+    # initialize necessary variables
+    explored_set = []
+    frontier = []  # priority queue: use tuple with the first element is heuristic_val
+    parents = {}
+
+    # start with source node, path cost is zero
+    heappush(frontier, ((heuristic_values[src], src)))
+
+    while True:
+        if len(frontier) == 0:  # failure
+            return ([], [])
+
+        (cost, node) = heappop(frontier)
+        explored_set.append(node)
+        if node == dest:
+            break
+
+        cost -= heuristic_values[node]
+        for vertex in range(count_node):
+            cost_new_node = heuristic_values[vertex] + adj[node][vertex] + cost
+            i = find_node_in_priority_queue(frontier, vertex)
+            if vertex != node and adj[node][vertex] != 0:
+                if vertex not in explored_set and i == -1:
+                    parents[vertex] = node
+                    heappush(frontier, (cost_new_node + cost, vertex))
+                elif i != -1 and frontier[i][0] > cost_new_node:
+                    frontier.pop(i)
+                    parents[vertex] = node
+                    heappush(frontier, (cost_new_node, vertex))
+
+    solution = create_solution(parents, src, dest)
+    return (explored_set, solution)
+
+
 if __name__ == "__main__":
     # read file and store
     # reader = open("input.txt", "r")
@@ -214,27 +285,34 @@ if __name__ == "__main__":
     # print(expanded_nodes)
     # print(path)
 
-    b = [
-        [0, 4, 3, 0, 0, 0, 0],
-        [4, 0, 0, 0, 12, 5, 0],
-        [3, 0, 0, 7, 10, 0, 0],
-        [0, 0, 7, 0, 2, 0, 0],
-        [0, 12, 10, 2, 0, 0, 5],
-        [0, 5, 0, 0, 0, 0, 16],
-        [0, 0, 0, 0, 5, 16, 0],
-    ]
-    (expanded_nodes, path) = breadth_first_search(b, 0, 6)
-    print(expanded_nodes)
-    print(path)
-    (expanded_nodes, path) = uniform_cost_search(b, 0, 6)
-    print(expanded_nodes)
-    print(path)
-    (expanded_nodes, path) = depth_first_search(b, 0, 6)
-    print(expanded_nodes)
-    print(path)
-    (expanded_nodes, path) = iterative_deepening_search(b, 0, 6)
-    print(expanded_nodes)
-    print(path)
+    # b = [
+    #     [0, 4, 3, 0, 0, 0, 0],
+    #     [4, 0, 0, 0, 12, 5, 0],
+    #     [3, 0, 0, 7, 10, 0, 0],
+    #     [0, 0, 7, 0, 2, 0, 0],
+    #     [0, 12, 10, 2, 0, 0, 5],
+    #     [0, 5, 0, 0, 0, 0, 16],
+    #     [0, 0, 0, 0, 5, 16, 0],
+    # ]
+    # hvs = [14, 12, 11, 6, 4, 11, 0]
+    # (expanded_nodes, path) = breadth_first_search(b, 0, 6)
+    # print(expanded_nodes)
+    # print(path)
+    # (expanded_nodes, path) = uniform_cost_search(b, 0, 6)
+    # print(expanded_nodes)
+    # print(path)
+    # (expanded_nodes, path) = depth_first_search(b, 0, 6)
+    # print(expanded_nodes)
+    # print(path)
+    # (expanded_nodes, path) = iterative_deepening_search(b, 0, 6)
+    # print(expanded_nodes)
+    # print(path)
+    # (expanded_nodes, path) = greedy_best_first_search(b, hvs, 0, 6)
+    # print(expanded_nodes)
+    # print(path)
+    # (expanded_nodes, path) = a_star(b, hvs, 0, 6)
+    # print(expanded_nodes)
+    # print(path)
 
     # c = [
     #     [0, 4, 3, 0, 0, 0],
@@ -260,6 +338,22 @@ if __name__ == "__main__":
     # (expanded_nodes, path) = depth_first_search(d, 3, 0)
     # print(expanded_nodes)
     # print(path)
+
+
+    # e = [
+    #     [0, 2, 3, 0, 5, 0],
+    #     [2, 0, 0, 4, 0, 0],
+    #     [3, 0, 0, 0, 4, 0],
+    #     [0, 4, 0, 0, 1, 2],
+    #     [5, 0, 4, 1, 0, 5],
+    #     [0, 0, 0, 2, 5, 0],
+    # ]
+    # hvs1 = [5, 2, 5, 2, 1, 0]
+    # (expanded_nodes, path) = greedy_best_first_search(e, hvs1, 0, 5)
+    # print(expanded_nodes)
+    # print(path)
+
+
     # show output
 
     # save to file
