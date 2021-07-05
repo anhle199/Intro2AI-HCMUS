@@ -21,7 +21,7 @@ def breadth_first_search(adj, src, dest):
 
     while True:
         if len(frontier) == 0:  # failure
-            return ([], [])
+            return (explored_set, [])
 
         node = frontier.popleft()
         explored_set.append(node)
@@ -53,7 +53,7 @@ def uniform_cost_search(adj, src, dest):
 
     while True:
         if len(frontier) == 0:  # failure
-            return ([], [])
+            return (explored_set, [])
 
         (weight, node) = heappop(frontier)
         explored_set.append(node)
@@ -98,7 +98,7 @@ def depth_first_search(adj, src, dest):
         is_visited = False
         if len(frontier) == 0:
             if len(visited) == 0:
-                return ([], [])
+                return (explored_set, [])
             else:  # back to old node (it is in expanded nodes)
                 frontier.append(visited.pop())
                 is_visited = True  # don't add old node into expanded nodes
@@ -208,7 +208,7 @@ def greedy_best_first_search(adj, heuristic_values, src, dest):
 
     while True:
         if len(frontier) == 0:  # failure
-            return ([], [])
+            return (explored_set, [])
 
         (heuristic_val, node) = heappop(frontier)
         if node == dest:
@@ -241,7 +241,7 @@ def a_star(adj, heuristic_values, src, dest):
 
     while True:
         if len(frontier) == 0:  # failure
-            return ([], [])
+            return (explored_set, [])
 
         (cost, node) = heappop(frontier)
         explored_set.append(node)
@@ -265,12 +265,62 @@ def a_star(adj, heuristic_values, src, dest):
     return (explored_set, solution)
 
 
+def search_algorithm(adj, heuristic_values, src, dest, type_algo):
+    switcher = {
+        0: breadth_first_search(adj, src, dest),
+        1: depth_first_search(adj, src, dest),
+        2: uniform_cost_search(adj, src, dest),
+        3: iterative_deepening_search(adj, src, dest),
+        4: greedy_best_first_search(adj, heuristic_values, src, dest),
+        5: a_star(adj, heuristic_values, src, dest),
+        # 6: 
+    }
+
+    return switcher.get(type_algo, ([], []))
+
+
 if __name__ == "__main__":
     # read file and store
-    # reader = open("input.txt", "r")
-    # whole_text = reader.read()  # read whole text in input.txt file
-    # lines = whole_text.split("\n")
+    reader = open("input.txt", "r")
+    whole_text = reader.read()  # read whole text in input.txt file
+    lines = whole_text.split("\n")
+    reader.close()
 
+    writer = open("output.txt", "w")
+    i = 0
+    while i < len(lines):
+        count_node = int(lines[i])
+        i += 1
+
+        lines[i] = lines[i].split()
+        src = int(lines[i][0])
+        dest = int(lines[i][1])
+        type_algo = int(lines[i][2])
+        i += 1
+
+        adj = []
+        for j in range(count_node):
+            lines[i] = lines[i].split()
+            adj.append([])
+            for k in range(count_node):
+                adj[j].append(int(lines[i][k]))
+            i += 1
+
+        heuristic_values = []
+        lines[i] = lines[i].split()
+        for j in range(count_node):
+            heuristic_values.append(int(lines[i][j]))
+        i += 1
+
+        (expanded_nodes, path) = search_algorithm(adj, heuristic_values, src, dest, type_algo)
+        first_line = " ".join(map(str, expanded_nodes))
+        second_line = "No path."
+        if path != []:
+            second_line = " ".join(map(str, path))
+
+        writer.writelines([first_line + "\n", second_line + "\n"])
+
+    writer.close()
     # call search algorithm function
     # a = [
     #     [0, 2, 0, 0, 3],

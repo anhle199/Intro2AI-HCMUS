@@ -23,6 +23,7 @@ def find_node_in_priority_queue(q, node):
             return i
     return -1
 
+
 # -> : one direction
 # <-> : two directions
 # Returns true:
