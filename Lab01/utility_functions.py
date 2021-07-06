@@ -24,22 +24,45 @@ def find_node_in_priority_queue(q, node):
     return -1
 
 
-# -> : one direction
-# <-> : two directions
-# Returns true:
-#   * current node -> new node and new node is not visited
-#   * there is a path from new node to current node that it is recorded
-# Otherwise returns false
-def is_against(adj, explored_set, parents, cur_node, new_state, src):
-    if new_state in explored_set and adj[new_state][cur_node] != 0:
+def is_against(visited, explored_set, parents, src, cur_node, new_node):
+    if new_node == src:
         return True
-    if cur_node == src or new_state not in explored_set:
+    if new_node not in explored_set:
         return False
 
-    node = cur_node
-    while True:
-        node = parents[node]
-        if node == src:
-            return False
-        elif node == new_state:
+    path = []  # path from source to current node
+    if cur_node != src:
+        node = cur_node
+        path.append(cur_node)
+        has_cycle = True
+        while True:
+            node = parents[node]
+            path.insert(0, node)
+            if node == src:
+                has_cycle = False
+                break
+            elif node == new_node:
+                break
+
+        if has_cycle:
             return True
+    else:
+        path = [src]
+
+    node = new_node
+    has_cycle = True
+    while True:
+        if node == src:
+            break
+
+        parent = parents[node]
+        if visited[node][parent] == 1 and parent in path:
+            break
+        if visited[node][parent] == 0:
+            has_cycle = False
+            break
+        node = parent
+
+    if visited[new_node][cur_node] == 0 and not has_cycle:
+        return False
+    return True
