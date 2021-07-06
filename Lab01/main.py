@@ -40,6 +40,7 @@ def breadth_first_search(adj, src, dest):
 
 def recur_depth_first_search(visited, explored_set, parents, src, dest, cur):
     if cur == dest:
+        explored_set.append(dest)
         return (visited, explored_set, parents, create_solution(parents, src, dest))
 
     count_node = len(visited)
@@ -250,7 +251,7 @@ def a_star(adj, heuristic_values, src, dest):
             if vertex != node and adj[node][vertex] != 0:
                 if vertex not in explored_set and i == -1:
                     parents[vertex] = node
-                    heappush(frontier, (cost_new_node + cost, vertex))
+                    heappush(frontier, (cost_new_node, vertex))
                 elif i != -1 and frontier[i][0] > cost_new_node:
                     frontier.pop(i)
                     parents[vertex] = node
@@ -261,17 +262,21 @@ def a_star(adj, heuristic_values, src, dest):
 
 
 def search_algorithm(adj, heuristic_values, src, dest, type_algo):
-    switcher = {
-        0: breadth_first_search(adj, src, dest),
-        1: depth_first_search(adj, src, dest),
-        2: uniform_cost_search(adj, src, dest),
-        3: iterative_deepening_search(adj, src, dest),
-        4: greedy_best_first_search(adj, heuristic_values, src, dest),
-        5: a_star(adj, heuristic_values, src, dest),
-        # 6: 
-    }
+    result = ([], [])
+    if type_algo == 0:
+        result = breadth_first_search(adj, src, dest)
+    elif type_algo == 1:
+        result = depth_first_search(adj, src, dest)
+    elif type_algo == 2:
+        result = uniform_cost_search(adj, src, dest)
+    elif type_algo == 3:
+        result = iterative_deepening_search(adj, src, dest)
+    elif type_algo == 4:
+        result = greedy_best_first_search(adj, heuristic_values, src, dest)
+    elif type_algo == 5:
+        result = a_star(adj, heuristic_values, src, dest)
 
-    return switcher.get(type_algo, ([], []))
+    return result
 
 
 if __name__ == "__main__":
@@ -282,54 +287,41 @@ if __name__ == "__main__":
     reader.close()
 
     # initialize variables to store data which is read from file
-    count_nodes = []
-    sources = []
-    destinations = []
-    type_algorithms = []
-    adj_matrices = []
+    count_node = int(lines[0])
+
+    lines[1] = lines[1].split()
+    src = int(lines[1][0])
+    dest = int(lines[1][1])
+    type_algo = int(lines[1][2])
+
+    adj_matrix = []
+    for i in range(count_node):
+        lines[i + 2] = lines[i + 2].split()
+        adj_matrix.append([])
+        for j in range(count_node):
+            adj_matrix[i].append(int(lines[i + 2][j]))
+
+    lines[-1] = lines[-1].split()
     heuristic_values = []
-
-    i = 0
-    while i < len(lines):
-        test_case_value = parse_data(lines, i)
-        count_nodes.append(test_case_value[0])
-        sources.append(test_case_value[1])
-        destinations.append(test_case_value[2])
-        type_algorithms.append(test_case_value[3])
-        adj_matrices.append(test_case_value[4])
-        heuristic_values.append(test_case_value[5])
-        i += count_nodes[-1] + 3
-
+    for i in range(count_node):
+        heuristic_values.append(int(lines[-1][i]))
 
     # excute specified algorithms and store result
-    expanded_nodes = []
-    paths = []
+    (expanded_nodes, path) = search_algorithm(adj_matrix, heuristic_values, src, dest, type_algo)
 
-    count_test_case = len(adj_matrices)
-    for j in range(count_test_case):
-        result = search_algorithm(adj_matrices[j], heuristic_values[j], sources[j], destinations[j], type_algorithms[j])
-        expanded_nodes.append(result[0])
-        paths.append(result[1])
+    # format data
+    if path == []:
+        path = "No path."
+    else:
+        path = " ".join(map(str, path))
 
+    if type_algo == 3:
+        for limit in range(len(expanded_nodes)):
+            expanded_nodes[limit] = '{' + " ".join(map(str, expanded_nodes[limit])) + '}'
+
+    expanded_nodes = " ".join(map(str, expanded_nodes))
 
     # write result to file
     writer = open("output.txt", "w")
-    for j in range(count_test_case):
-        # format data
-        if len(paths[j]) == 0:
-            paths[j] = "No path."
-        else:
-            paths[j] = " ".join(map(str, paths[j]))
-
-        if type_algorithms[j] == 3:
-            for limit in range(len(expanded_nodes[j])):
-                expanded_nodes[j][limit] = " ".join(map(str, expanded_nodes[j][limit]))
-
-        expanded_nodes[j] = " ".join(map(str, expanded_nodes[j]))
-
-        # write data to file
-        if j < count_test_case - 1:
-            paths[j] += "\n"
-        writer.writelines([expanded_nodes[j] + "\n", paths[j]])
-
+    writer.writelines([expanded_nodes + "\n", path])
     writer.close()
