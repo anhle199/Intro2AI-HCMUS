@@ -321,6 +321,10 @@ if __name__ == "__main__":
 
     expanded_nodes = " ".join(map(str, expanded_nodes))
 
+    # Show output on the screen
+    print(expanded_nodes)
+    print(path)
+
     # write result to file
     writer = open("output.txt", "w")
     writer.writelines([expanded_nodes + "\n", path])
