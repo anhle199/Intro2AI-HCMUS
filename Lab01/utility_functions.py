@@ -66,3 +66,28 @@ def is_against(visited, explored_set, parents, src, cur_node, new_node):
     if visited[new_node][cur_node] == 0 and not has_cycle:
         return False
     return True
+
+def parse_data(data, start_index):
+    count_node = int(data[start_index])
+    start_index += 1
+
+    data[start_index] = data[start_index].split()
+    src = int(data[start_index][0])
+    dest = int(data[start_index][1])
+    type_algo = int(data[start_index][2])
+    start_index += 1
+
+    adj = []
+    for i in range(count_node):
+        data[start_index] = data[start_index].split()
+        adj.append([])
+        for j in range(count_node):
+            adj[i].append(int(data[start_index][j]))
+        start_index += 1
+
+    heuristic_values = []
+    data[start_index] = data[start_index].split()
+    for i in range(count_node):
+        heuristic_values.append(int(data[start_index][i]))
+
+    return (count_node, src, dest, type_algo, adj, heuristic_values)

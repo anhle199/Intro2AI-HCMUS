@@ -275,44 +275,61 @@ def search_algorithm(adj, heuristic_values, src, dest, type_algo):
 
 
 if __name__ == "__main__":
-    # read file and store
-    # reader = open("input.txt", "r")
-    # whole_text = reader.read()  # read whole text in input.txt file
-    # lines = whole_text.split("\n")
-    # reader.close()
+    # read data from file
+    reader = open("input.txt", "r")
+    whole_text = reader.read()  # read whole text in input.txt file
+    lines = whole_text.split("\n")
+    reader.close()
 
-    # writer = open("output.txt", "w")
-    # i = 0
-    # while i < len(lines):
-    #     count_node = int(lines[i])
-    #     i += 1
+    # initialize variables to store data which is read from file
+    count_nodes = []
+    sources = []
+    destinations = []
+    type_algorithms = []
+    adj_matrices = []
+    heuristic_values = []
 
-    #     lines[i] = lines[i].split()
-    #     src = int(lines[i][0])
-    #     dest = int(lines[i][1])
-    #     type_algo = int(lines[i][2])
-    #     i += 1
+    i = 0
+    while i < len(lines):
+        test_case_value = parse_data(lines, i)
+        count_nodes.append(test_case_value[0])
+        sources.append(test_case_value[1])
+        destinations.append(test_case_value[2])
+        type_algorithms.append(test_case_value[3])
+        adj_matrices.append(test_case_value[4])
+        heuristic_values.append(test_case_value[5])
+        i += count_nodes[-1] + 3
 
-    #     adj = []
-    #     for j in range(count_node):
-    #         lines[i] = lines[i].split()
-    #         adj.append([])
-    #         for k in range(count_node):
-    #             adj[j].append(int(lines[i][k]))
-    #         i += 1
 
-    #     heuristic_values = []
-    #     lines[i] = lines[i].split()
-    #     for j in range(count_node):
-    #         heuristic_values.append(int(lines[i][j]))
-    #     i += 1
+    # excute specified algorithms and store result
+    expanded_nodes = []
+    paths = []
 
-    #     (expanded_nodes, path) = search_algorithm(adj, heuristic_values, src, dest, type_algo)
-    #     first_line = " ".join(map(str, expanded_nodes))
-    #     second_line = "No path."
-    #     if path != []:
-    #         second_line = " ".join(map(str, path))
+    count_test_case = len(adj_matrices)
+    for j in range(count_test_case):
+        result = search_algorithm(adj_matrices[j], heuristic_values[j], sources[j], destinations[j], type_algorithms[j])
+        expanded_nodes.append(result[0])
+        paths.append(result[1])
 
-    #     writer.writelines([first_line + "\n", second_line + "\n"])
 
-    # writer.close()
+    # write result to file
+    writer = open("output.txt", "w")
+    for j in range(count_test_case):
+        # format data
+        if len(paths[j]) == 0:
+            paths[j] = "No path."
+        else:
+            paths[j] = " ".join(map(str, paths[j]))
+
+        if type_algorithms[j] == 3:
+            for limit in range(len(expanded_nodes[j])):
+                expanded_nodes[j][limit] = " ".join(map(str, expanded_nodes[j][limit]))
+
+        expanded_nodes[j] = " ".join(map(str, expanded_nodes[j]))
+
+        # write data to file
+        if j < count_test_case - 1:
+            paths[j] += "\n"
+        writer.writelines([expanded_nodes[j] + "\n", paths[j]])
+
+    writer.close()
