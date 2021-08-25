@@ -57,7 +57,7 @@ def main():
     # Read data from csv file.
     df = pd.read_csv('/Users/lehoanganh/Desktop/HoangAnh/SecondYear/ThirdSemester/Intro2AI/Intro2AI-HCMUS/Lab02/mushrooms.csv')
 
-    # Encode data.
+    # Encode and fit data.
     preprocess(df)
 
     # Proportions (train/test): 40/60 - 60/40 - 80/20 - 90/10.
