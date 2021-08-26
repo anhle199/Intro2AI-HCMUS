@@ -35,10 +35,21 @@ def split(df, test_rates):
 
 def draw_graph(clf_list, feature_names, label_name, filenames, directory=None, file_extension='png'):
     for i in range(len(clf_list)):
-        dot_data = export_graphviz(clf_list[i], feature_names=feature_names, class_names=label_name, filled=True, rounded=True, special_characters=True)
-        graph = graphviz.Source(dot_data, filename=filenames[i], directory=directory, format=file_extension, engine='dot')
-        # graph.save()  # Save source code to gv file.
-        # graph.view()  # Draw graph and save to file with `png` file extension.
+        dot_data = export_graphviz(
+            clf_list[i],
+            feature_names=feature_names,
+            class_names=label_name,
+            filled=True,
+            rounded=True,
+            special_characters=True
+        )
+        graph = graphviz.Source(
+            dot_data,
+            filename=filenames[i],
+            directory=directory,
+            format=file_extension,
+            engine='dot'
+        )
         graph.render()
 
 
@@ -97,8 +108,8 @@ def main():
     # Encode and fit data.
     preprocess(df)
 
-    # Proportions (train/test): 40/60 - 60/40 - 80/20 - 90/10.
-    test_rates = [0.6, 0.4, 0.2, 0.1]
+    # Initialize necessary data.
+    test_rates = [0.6, 0.4, 0.2, 0.1]  # Proportions (train/test): 40/60 - 60/40 - 80/20 - 90/10.
     feature_names = list(df.columns[1:])
     label_name = df.columns[0]
 
