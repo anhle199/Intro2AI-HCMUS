@@ -33,6 +33,7 @@ def split(df, test_rates):
     return feature_train_list, feature_test_list, label_train_list, label_test_list
 
 
+# Drawing the decision tree classifiers using graphviz.
 def draw_graph(clf_list, feature_names, label_name, filenames, directory=None, file_extension='png'):
     for i in range(len(clf_list)):
         dot_data = export_graphviz(
