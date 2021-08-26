@@ -81,7 +81,7 @@ def evaluate_all_clf(clf_list, feature_test_list, label_test_list, filenames):
         plt.figure(i + 1)
         sns.heatmap(cfm, annot=True, linewidths=1, cbar=None)
         plt.title('The Decision Tree Classifier Confusion Matrix (train/test - {})'.format(rates_string[i]))
-        plt.ylabel('Truth label')
+        plt.ylabel('True label')
         plt.xlabel('Predicted label')
         plt.savefig(fname=filenames[i])
 
@@ -127,7 +127,7 @@ def main():
     draw_graph(clf_list, feature_names, label_name, filenames_for_proportion)
 
     # Evaluating the decision tree classifiers.
-    filenames_for_evaluate = ['clf-evaluate-{}.png'.format(rate) for rate in train_test_rates]
+    filenames_for_evaluate = ['cfm-{}.png'.format(rate) for rate in train_test_rates]
     evaluate_all_clf(clf_list, feature_test_list, label_test_list, filenames_for_evaluate)
 
     # The depth and accuracy of a decision tree (train/test - 80/20).
